@@ -269,6 +269,7 @@ define Device/xiaomi_dgnwg05lm
 	kmod-bluetooth bluez-daemon bluez-libs bluez-utils
   DEVICE_DTS := \
 	imx6ull-xiaomi-dgnwg05lm
+  UBOOT := xiaomi_dgnwg05lm
 endef
 TARGET_DEVICES += xiaomi_dgnwg05lm
 
