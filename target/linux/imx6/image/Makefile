@@ -238,4 +238,39 @@ define Device/apalis
 endef
 TARGET_DEVICES += apalis
 
+define Device/xiaomi_gateway-lumi
+  DEVICE_VENDOR := Xiaomi
+  DEVICE_MODEL := Lumi Gateway
+  DEVICE_PACKAGES := \
+	kmod-button-hotplug kmod-input-gpio-keys \
+	kmod-ledtrig-activity kmod-ledtrig-oneshot \
+	kmod-ledtrig-transient kmod-ledtrig-gpio \
+	kmod-i2c-core kmod-iio-core kmod-iio-vf610 \
+	kmod-sound-core kmod-sound-soc-imx \
+	kmod-sound-soc-tfa9882 alsa-utils \
+	wpa-supplicant ca-certificates hostapd \
+	nand-utils kobs-ng
+
+  KERNEL_INSTALL := 0
+  KERNEL_NAME := zImage
+  KERNEL_SUFFIX := -zImage
+  KERNEL := kernel-bin
+  IMAGES := sysupgrade.bin dtb rootfs.bin
+  IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
+  IMAGE/rootfs.bin := append-rootfs
+  IMAGE/dtb := install-dtb
+endef
+
+define Device/xiaomi_dgnwg05lm
+  $(Device/xiaomi_gateway-lumi)
+  DEVICE_MODEL := DGNWG05LM
+  BOARD_NAME := xiaomi,dgnwg05lm
+  DEVICE_PACKAGES += kmod-rtl8723bs rtl8723bs-firmware \
+	kmod-bluetooth bluez-daemon bluez-libs bluez-utils
+  DEVICE_DTS := \
+	imx6ull-xiaomi-dgnwg05lm
+  UBOOT := xiaomi_dgnwg05lm
+endef
+TARGET_DEVICES += xiaomi_dgnwg05lm
+
 $(eval $(call BuildImage))
