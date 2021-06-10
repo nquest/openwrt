@@ -26,7 +26,7 @@ Signed-off-by: Ivan Belokobylskiy <belokobylskij@gmail.com>
  	imx6ull-phytec-segin-ff-rdk-nand.dtb \
 --- /dev/null
 +++ b/arch/arm/boot/dts/imx6ull-xiaomi-lumi.dtsi
-@@ -0,0 +1,302 @@
+@@ -0,0 +1,363 @@
 +// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
 +//
 +// Copyright (C) 2016 Freescale Semiconductor, Inc.
@@ -34,12 +34,20 @@ Signed-off-by: Ivan Belokobylskiy <belokobylskij@gmail.com>
 +/dts-v1/;
 +
 +#include "imx6ull.dtsi"
-+#include "imx6ul-14x14-evk.dtsi"
 +
 +/ {
 +	model = "Xiaomi Gateway Lumi";
 +	compatible = "xiaomi,gateway-lumi",
 +               "fsl,imx6ull-14x14-evk", "fsl,imx6ull";
++
++	chosen {
++		stdout-path = &uart1;
++	};
++
++	memory@80000000 {
++		device_type = "memory";
++		reg = <0x80000000 0x20000000>;
++	};
 +
 +	usdhc1_pwrseq: usdhc1_pwrseq {
 +		pinctrl-names = "default";
@@ -47,10 +55,14 @@ Signed-off-by: Ivan Belokobylskiy <belokobylskij@gmail.com>
 +		compatible = "mmc-pwrseq-simple";
 +		reset-gpios = <&gpio5 1 GPIO_ACTIVE_LOW>;
 +	};
-+
-+	backlight_display: backlight-display {
-+		status = "disabled";
++	reg_wifi_3v3: regulator_wifi_3v3 {
++		compatible = "regulator-fixed";
++		regulator-name = "VSD_3V3";
++		regulator-min-microvolt = <3300000>;
++		regulator-max-microvolt = <3300000>;
++		regulator-always-on;
 +	};
++
 +
 +	gpio-keys {
 +		compatible = "gpio-keys";
@@ -157,12 +169,43 @@ Signed-off-by: Ivan Belokobylskiy <belokobylskij@gmail.com>
 +	nand-on-flash-bbt;
 +};
 +
++&uart1 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&pinctrl_uart1>;
++	status = "okay";
++};
++
++&uart2 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&pinctrl_uart2>;
++	status = "okay";
++};
++
 +&uart3 {
 +	pinctrl-names = "default";
 +	pinctrl-0 = <&pinctrl_uart3>;
 +	uart-has-rtscts;
 +	status = "okay";
 +};
++
++&usbotg1 {
++	dr_mode = "host";
++	status = "okay";
++};
++
++&usbotg2 {
++	dr_mode = "host";
++	status = "disabled";
++};
++
++&usbphy1 {
++	fsl,tx-d-cal = <106>;
++};
++
++&usbphy2 {
++	fsl,tx-d-cal = <106>;
++};
++
 +
 +&iomuxc {
 +	pinctrl-names = "default";
@@ -195,6 +238,27 @@ Signed-off-by: Ivan Belokobylskiy <belokobylskij@gmail.com>
 +		>;
 +	};
 +
++	pinctrl_i2c1: i2c1grp {
++		fsl,pins = <
++			MX6UL_PAD_UART4_TX_DATA__I2C1_SCL 0x4001b8b0
++			MX6UL_PAD_UART4_RX_DATA__I2C1_SDA 0x4001b8b0
++		>;
++	};
++
++	pinctrl_i2c2: i2c2grp {
++		fsl,pins = <
++			MX6UL_PAD_UART5_TX_DATA__I2C2_SCL 0x4001b8b0
++			MX6UL_PAD_UART5_RX_DATA__I2C2_SDA 0x4001b8b0
++		>;
++	};
++
++	pinctrl_uart1: uart1grp {
++		fsl,pins = <
++			MX6UL_PAD_UART1_TX_DATA__UART1_DCE_TX 0x1b0b1
++			MX6UL_PAD_UART1_RX_DATA__UART1_DCE_RX 0x1b0b1
++		>;
++	};
++
 +	pinctrl_uart2: uart2grp {
 +		fsl,pins = <
 +			MX6UL_PAD_UART2_TX_DATA__UART2_DCE_TX	0x1b0b1
@@ -208,6 +272,12 @@ Signed-off-by: Ivan Belokobylskiy <belokobylskij@gmail.com>
 +			MX6UL_PAD_UART3_RX_DATA__UART3_DCE_RX 0x1b0b1
 +			MX6UL_PAD_UART3_RTS_B__UART3_DCE_RTS  0x1b0b1
 +			MX6UL_PAD_UART3_CTS_B__UART3_DCE_CTS  0x1b0b1
++		>;
++	};
++
++	pinctrl_pwm1: pwm1grp {
++		fsl,pins = <
++			MX6UL_PAD_GPIO1_IO08__PWM1_OUT   0x110b0
 +		>;
 +	};
 +
@@ -267,15 +337,6 @@ Signed-off-by: Ivan Belokobylskiy <belokobylskij@gmail.com>
 +	pinctrl-names = "default";
 +	pinctrl-0 = <&pinctrl_i2c1>;
 +	status = "okay";
-+
-+	mag3110@e {
-+		compatible = "fsl,mag3110";
-+		reg = <0x0e>;
-+	};
-+};
-+
-+&reg_sd1_vmmc {
-+	regulator-always-on;
 +};
 +
 +&usdhc1 {
@@ -284,12 +345,12 @@ Signed-off-by: Ivan Belokobylskiy <belokobylskij@gmail.com>
 +	pinctrl-names = "default";
 +	pinctrl-0 = <&pinctrl_usdhc1>;
 +	no-1-8-v;
++	vmmc-supply = <&reg_wifi_3v3>;
 +	non-removable;
 +	pm-ignore-notify;
 +	mmc-pwrseq = <&usdhc1_pwrseq>;
 +	cap-power-off-card;
-+	/delete-property/ wakeup-source;
-+	/delete-property/ enable-sdio-wakeup;
++	status = "okay";
 +};
 +
 +&pwm1 {
