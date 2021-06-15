@@ -26,7 +26,7 @@ Signed-off-by: Ivan Belokobylskiy <belokobylskij@gmail.com>
  	imx6ull-phytec-segin-ff-rdk-nand.dtb \
 --- /dev/null
 +++ b/arch/arm/boot/dts/imx6ull-xiaomi-lumi.dtsi
-@@ -0,0 +1,363 @@
+@@ -0,0 +1,345 @@
 +// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
 +//
 +// Copyright (C) 2016 Freescale Semiconductor, Inc.
@@ -46,10 +46,10 @@ Signed-off-by: Ivan Belokobylskiy <belokobylskij@gmail.com>
 +
 +	memory@80000000 {
 +		device_type = "memory";
-+		reg = <0x80000000 0x20000000>;
++		reg = <0x80000000 0x10000000>;
 +	};
 +
-+	usdhc1_pwrseq: usdhc1_pwrseq {
++	wifi_pwrseq: wifi_pwrseq {
 +		pinctrl-names = "default";
 +		pinctrl-0 = <&pinctrl_wifi>;
 +		compatible = "mmc-pwrseq-simple";
@@ -153,10 +153,6 @@ Signed-off-by: Ivan Belokobylskiy <belokobylskij@gmail.com>
 +	status = "okay";
 +};
 +
-+&sai2 {
-+	status = "disabled";
-+};
-+
 +&clks {
 +	assigned-clocks = <&clks IMX6UL_CLK_PLL3_PFD2>,<&clks IMX6UL_CLK_PLL4_AUDIO_DIV>;
 +	assigned-clock-rates = <320000000>,<786432000>;
@@ -191,11 +187,6 @@ Signed-off-by: Ivan Belokobylskiy <belokobylskij@gmail.com>
 +&usbotg1 {
 +	dr_mode = "host";
 +	status = "okay";
-+};
-+
-+&usbotg2 {
-+	dr_mode = "host";
-+	status = "disabled";
 +};
 +
 +&usbphy1 {
@@ -348,9 +339,13 @@ Signed-off-by: Ivan Belokobylskiy <belokobylskij@gmail.com>
 +	vmmc-supply = <&reg_wifi_3v3>;
 +	non-removable;
 +	pm-ignore-notify;
-+	mmc-pwrseq = <&usdhc1_pwrseq>;
++	mmc-pwrseq = <&wifi_pwrseq>;
 +	cap-power-off-card;
 +	status = "okay";
++
++	rtl8723_sdio: rtl8723_sdio@1 {
++		reg = <1>;
++	};
 +};
 +
 +&pwm1 {
@@ -376,19 +371,6 @@ Signed-off-by: Ivan Belokobylskiy <belokobylskij@gmail.com>
 +	pinctrl-0 = <&pinctrl_adc1>;
 +	num-channels = <2>;
 +	status = "okay";
-+};
-+
-+&usdhc2 {
-+	status = "disabled";
-+};
-+
-+
-+&fec1 {
-+	status = "disabled";
-+};
-+
-+&fec2 {
-+	status = "disabled";
 +};
 --- /dev/null
 +++ b/arch/arm/boot/dts/imx6ull-xiaomi-dgnwg05lm.dts
