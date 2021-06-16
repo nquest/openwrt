@@ -343,7 +343,7 @@ Signed-off-by: Ivan Belokobylskiy <belokobylskij@gmail.com>
 +	cap-power-off-card;
 +	status = "okay";
 +
-+	rtl8723_sdio: rtl8723_sdio@1 {
++	rtlwifi_sdio: rtlwifi_sdio@1 {
 +		reg = <1>;
 +	};
 +};
